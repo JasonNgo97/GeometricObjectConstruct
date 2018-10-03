@@ -8,6 +8,9 @@ numVertices = 5;
 height = 10;
 radius = 6;
 angle = 70;
+s_ij = 0.1
+beginHIndex = 784;
+endHIndex = 789
 geoTempGraph = GeoConstruct(numVertices, height, radius, angle);
 print ("Num of Vertices"+ str(geoTempGraph.NumberOfVertices));
 rowCount = 0;
@@ -33,5 +36,58 @@ with open('Wgt.csv') as csvFile:
     wgtFinal = np.array(wgt).astype("float");
     print(" First row of Wgt");
     print(wgtFinal[0,:]);
-# W e initialize the matrices using this
+
+with open('Dij.csv') as csvFile:
+    csvReader = csv.reader(csvFile, delimiter=',');
+    dij = list(csvReader);
+    dijFinal = np.array(dij).astype("float");
+    print(" First row of dij");
+    print(dijFinal[784:]);
+# We initialize the matrices using this
 geoTempGraph.initializeMatrices(motFinal,tstFinal,wgtFinal);
+
+#Here I'm truncating the matrix to only analyze the hidden nodes
+tempMat=np.array(motFinal);
+
+#This initializes the Mot File for hidden Nodes
+hiddenNodeMot=tempMat[beginHIndex:endHIndex,:];
+print(hiddenNodeMot[1,1000:2000]);
+print("Dimension Length" + str(hiddenNodeMot.shape[0]));
+
+for i in range(0,hiddenNodeMot.shape[0]):
+    for j in range(0,hiddenNodeMot.shape[1]):
+        if hiddenNodeMot[i][j] >= 785 and hiddenNodeMot[i][j]<=789:
+            hiddenNodeMot[i][j] = hiddenNodeMot[i][j] - 784;
+        else:
+            hiddenNodeMot[i][j] = 0;
+
+#print("The first row of converted matrix")
+hiddenNodeMotFinal=np.array(hiddenNodeMot).astype("int");
+#print("The first row of converted matrix")
+#print(hiddenNodeMotFinal[0,1000:2000]);
+
+
+#This initializes the tst Fie for hidden Nodes
+tempMat = np.array(tstFinal);
+hiddenNodeTstFinal = tempMat[beginHIndex:endHIndex,:];
+tempMat = np.array(dijFinal);
+dijHNode= tempMat[beginHIndex:endHIndex,beginHIndex:endHIndex];
+
+print(" Dij of Hidden Nodes");
+for i in range(0,dijHNode.shape[0]):
+    print(dijHNode[i,0:dijHNode.shape[1]]);
+#Now, we need to initialize the Tij matrix
+
+
+TijHNode=dijHNode;
+for i in range(0, TijHNode.shape[0]):
+    for j in range(0, TijHNode.shape[1]):
+        TijHNode[i][j]=TijHNode[i][j]/s_ij;
+
+print(" Time delay of Hidden Nodes");
+
+for i in range(0, TijHNode.shape[0]):
+    print(TijHNode[i,0:TijHNode.shape[1]]);
+
+
+geoTempGraph.initializeHNodeMatrix(hiddenNodeMotFinal,hiddenNodeTstFinal,TijHNode);

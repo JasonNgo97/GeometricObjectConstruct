@@ -25,6 +25,9 @@ class GeoConstruct:
     #This is the radius of Bn
     sourceAngle = 0
     #This is the phi angle
+    hiddenNodeMotMatrix = None;
+    hiddenNodeTstMatrix = None;
+    hiddenNodeTijMatrix = None;
 
     def __init__(self, numVertices, height, radius, sourceAngle):
         self.NumberOfVertices = numVertices;
@@ -33,8 +36,13 @@ class GeoConstruct:
         self.radius = radius;
         self.sourceAngle = sourceAngle;
 
-    def initializeMatrices( MotMatrix, TstMatrix, WgtMatrix ):
+    def initializeMatrices( self, MotMatrix, TstMatrix, WgtMatrix ):
         print("Initializing matrices");
         self.MotMatrix = MotMatrix;
         self.TstMatrix = TstMatrix;
         self.WgtMatrix = WgtMatrix;
+
+    def initializeHNodeMatrix( self, hiddenNodeMot, hiddenNodeTstMatrix, hiddenNodeTijMatrix):
+        self.hiddenNodeMotMatrix = hiddenNodeMot;
+        self.hiddenNodeTstMatrix = hiddenNodeTstMatrix;
+        self.hiddenNodeTijMatrix = hiddenNodeTijMatrix;
