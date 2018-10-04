@@ -1,4 +1,8 @@
-import numpy
+import numpy as np
+from B_n import *
+#from scipy import special, optimize
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 
 class GeoConstruct:
     PrismSequence = None;
@@ -26,9 +30,11 @@ class GeoConstruct:
     sourceAngle = 0
     #This is the phi angle
     hiddenNodeMotMatrix = None;
+    #This is the motMatrix for the hidden Nodes
     hiddenNodeTstMatrix = None;
+    #This is the timeMatrix for the hidden nodes
     hiddenNodeTijMatrix = None;
-
+    #This is the time delay
     def __init__(self, numVertices, height, radius, sourceAngle):
         self.NumberOfVertices = numVertices;
         self.NumberOfPrism = 0;
@@ -46,3 +52,9 @@ class GeoConstruct:
         self.hiddenNodeMotMatrix = hiddenNodeMot;
         self.hiddenNodeTstMatrix = hiddenNodeTstMatrix;
         self.hiddenNodeTijMatrix = hiddenNodeTijMatrix;
+
+    def initializeFirstBn(self,ax):
+        firstBn = B_n(self.NumberOfVertices,True,self.radius,(0,0,0));
+        firstBn.initializeFirst();
+        firstBn.printVertexCoordinate();
+        firstBn.plotB_n(ax);

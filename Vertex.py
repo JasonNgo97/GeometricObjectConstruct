@@ -7,7 +7,7 @@ class Vertex:
     #This is its index as a hidden Node
     hiddenNodeOffset = 0;
     #This is a constant used to index the matrix
-    totalNumHNodes = 0;
+    numOfVertices = 0;
     #This is the total number of hidden nodes
     vertexPosition = None;
     #This is its position in Bn
@@ -27,3 +27,11 @@ class Vertex:
     #The time value currently
     timeIndex = 0;
     #The first time index in Mot file
+
+    def __init__(self, numOfVertices, point, ID):
+        self.vertexPosition = point;
+        self.vertexID = ID;
+        self.numOfVertices = numOfVertices;
+
+    def printContents(self):
+        print(str(self.vertexID)+": "+str(self.vertexPosition));

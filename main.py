@@ -1,10 +1,12 @@
 import numpy as np
 import csv
 from GeoConstruct import *
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 print("Hello");
 #x = GeoConstruct(10,20);
-numVertices = 5;
+numVertices = 12;
 height = 10;
 radius = 6;
 angle = 70;
@@ -91,3 +93,9 @@ for i in range(0, TijHNode.shape[0]):
 
 
 geoTempGraph.initializeHNodeMatrix(hiddenNodeMotFinal,hiddenNodeTstFinal,TijHNode);
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+geoTempGraph.initializeFirstBn(ax);
+
+plt.show();
