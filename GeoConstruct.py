@@ -3,6 +3,8 @@ from B_n import *
 #from scipy import special, optimize
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
+
 
 class GeoConstruct:
     PrismSequence = None;
@@ -56,5 +58,6 @@ class GeoConstruct:
     def initializeFirstBn(self,ax):
         firstBn = B_n(self.NumberOfVertices,True,self.radius,(0,0,0));
         firstBn.initializeFirst();
-        firstBn.printVertexCoordinate();
         firstBn.plotB_n(ax);
+        firstBn.drawLines(ax);
+        firstBn.printVertexCoordinate();

@@ -4,6 +4,7 @@ import math
 from Vertex import *
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 
 
 
@@ -64,7 +65,7 @@ class B_n:
     def printVertexCoordinate(self):
         print(" Printing Vertex Coordinates");
         for i in range(self.numOfVertices):
-            self.verticesSet[i].printContents
+            self.verticesSet[i].printContents();
         print(" Printing out edge distances");
         vertex1 = None;
         vertex2 = None;
@@ -75,6 +76,14 @@ class B_n:
             dist = self.distanceBetweenPoints(vertex1,vertex2);
             print(str(i)+","+str(i+1)+": "+str(dist));
 
+    def drawLines(self,ax):
+        for i in range(0,self.numOfVertices-1):
+                vertex1 = np.array(self.verticesSet[i].vertexPosition);
+                vertex2 = np.array(self.verticesSet[i+1].vertexPosition);
+                v1Name = self.verticesSet[i].vertexID;
+                v2Name = self.verticesSet[i+1].vertexID;
+                print("Drawing line for "+ str(v1Name)+" , "+str(v2Name));
+                ax.plot([vertex1[0],vertex2[0]],[vertex1[1],vertex2[1]],[0,0]);
 
     def plotB_n(self, ax):
         xPos = 0;
