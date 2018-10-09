@@ -44,6 +44,7 @@ class GeoConstruct:
         self.radius = radius;
         self.sourceAngle = sourceAngle;
 
+
     def initializeMatrices( self, MotMatrix, TstMatrix, WgtMatrix ):
         print("Initializing matrices");
         self.MotMatrix = MotMatrix;
@@ -56,8 +57,21 @@ class GeoConstruct:
         self.hiddenNodeTijMatrix = hiddenNodeTijMatrix;
 
     def initializeFirstBn(self,ax):
-        firstBn = B_n(self.NumberOfVertices,True,self.radius,(0,0,0));
+        """
+        This initializes the first Bn which has its norm vector
+        parallel to the z axis
+        """
+        firstBn = B_n(self.NumberOfVertices,True,self.radius,(0,0,0),(0,0,1));
         firstBn.initializeFirst();
         firstBn.plotB_n(ax);
         firstBn.drawLines(ax);
         firstBn.printVertexCoordinate();
+
+
+    def initializeBn(self,ax,normVec):
+        Bn = B_n(self.NumberOfVertices,False,self.radius,(0,0,0), normVec);
+        Bn.initializeSelf();
+        Bn.dotProductVecSet();
+        #Bn.plotVertex(ax,Bn.verticesSet[0]);
+        Bn.plotCentroidAndNorm(ax);
+        Bn.plotVertices(ax);

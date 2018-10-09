@@ -98,6 +98,7 @@ geoTempGraph.initializeHNodeMatrix(hiddenNodeMotFinal,hiddenNodeTstFinal,TijHNod
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-geoTempGraph.initializeFirstBn(ax);
+#geoTempGraph.initializeFirstBn(ax);
 
+geoTempGraph.initializeBn(ax,(1,2,3));
 plt.show();
