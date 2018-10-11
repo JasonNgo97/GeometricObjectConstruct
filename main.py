@@ -9,7 +9,7 @@ import matplotlib.lines as mlines
 print("Hello");
 #x = GeoConstruct(10,20);
 numVertices = 12;
-height = 10;
+height = 20;
 radius = 6;
 angle = 70;
 s_ij = 0.1
@@ -100,5 +100,5 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 #geoTempGraph.initializeFirstBn(ax);
 
-geoTempGraph.initializeBn(ax,(1,2,3));
+geoTempGraph.initializePrism(ax,(0,0,1));
 plt.show();

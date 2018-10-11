@@ -1,5 +1,6 @@
 import numpy as np
 from B_n import *
+from Prism import *
 #from scipy import special, optimize
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
@@ -31,6 +32,8 @@ class GeoConstruct:
     #This is the radius of Bn
     sourceAngle = 0
     #This is the phi angle
+    baseVec = 0;
+    #This is the vec to compare with projVec
     hiddenNodeMotMatrix = None;
     #This is the motMatrix for the hidden Nodes
     hiddenNodeTstMatrix = None;
@@ -43,7 +46,7 @@ class GeoConstruct:
         self.height = height;
         self.radius = radius;
         self.sourceAngle = sourceAngle;
-
+        self.baseVec = (0,0,1);  #This is vector to align the projVec
 
     def initializeMatrices( self, MotMatrix, TstMatrix, WgtMatrix ):
         print("Initializing matrices");
@@ -61,17 +64,32 @@ class GeoConstruct:
         This initializes the first Bn which has its norm vector
         parallel to the z axis
         """
-        firstBn = B_n(self.NumberOfVertices,True,self.radius,(0,0,0),(0,0,1));
+        firstBn = B_n(self.NumberOfVertices,True,self.radius,(0,0,0),True);
         firstBn.initializeFirst();
         firstBn.plotB_n(ax);
         firstBn.drawLines(ax);
         firstBn.printVertexCoordinate();
 
+    def initializePrism(self,ax, normVec):
+        BnBottom= self.initializeBn(ax, normVec);
+        PrismInit=Prism(self.NumberOfVertices,BnBottom,self.height,normVec, normVec, normVec);
+        aV = 1;
+        sV = [4,5,7,9];
+        PrismInit.activatedVertex(aV, sV);
+        PrismInit.drawTopBottomBn(ax);
+        PrismInit.drawOLines(ax);
 
     def initializeBn(self,ax,normVec):
-        Bn = B_n(self.NumberOfVertices,False,self.radius,(0,0,0), normVec);
+        Bn = B_n(self.NumberOfVertices,False,self.radius,(0,0,0), normVec,True);
         Bn.initializeSelf();
-        Bn.dotProductVecSet();
+        return Bn;
+    #    Bn.dotProductVecSet();
         #Bn.plotVertex(ax,Bn.verticesSet[0]);
-        Bn.plotCentroidAndNorm(ax);
-        Bn.plotVertices(ax);
+    #    Bn.plotCentroidAndNorm(ax);
+    #    Bn.plotVertices(ax);
+    #    Bn.drawLines(ax);
+    #    BnNew = Bn.generateProjBn(self.height);
+    #    BnNew.plotVertices(ax);
+    ##    BnNew.plotCentroidAndNorm(ax);
+    #    BnNew.drawLines(ax);
+    #    Bn.drawLineToConnectBn(ax,BnNew);

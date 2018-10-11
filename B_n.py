@@ -27,22 +27,28 @@ class B_n:
     #This is the centroid of the Bn
     normalVector = None;
     #This is the plane for the Bn
+    projectionVector = None;
+    #This is the vector applies an affine transformation to the proection
+    baseVector = None;
+    #This is the vector from which to compare the projection vector
     verticesActivated = None;
     #Multiple vertices can be activated at a given time step
-    isFirst = False;
+    isFirst= False;
     #This is the inductive case where you have to set the points for Bn
     isBottom = False;
     #Bn is either the top or the bottom
+    #isTop = False;
     timeInstance = 0;
     #This is the time that Bn represents
 
-    def __init__(self, numOfVertices, isFirst, radius, centroid, normVec):
+    def __init__(self, numOfVertices, isFirst, radius, centroid, normVec, isBottom):
         self.numOfVertices = numOfVertices;
         self.isFirst = isFirst;
         self.radius = radius;
         self.centroid = centroid;
         self.verticesSet = [];
-        self.normalVector= self.unitVec(normVec);
+        self.normalVector = self.unitVec(normVec);
+        self.isBottom = isBottom;
 
     def unitVec(self,vectorToUnit):
         amtToDivide =  LA.norm(vectorToUnit);
@@ -53,7 +59,6 @@ class B_n:
 
     def initializeFirst(self):
         alpha = 2*np.pi/self.numOfVertices;
-
         if self.isFirst == False:
             return
         else:
@@ -68,7 +73,8 @@ class B_n:
                 xPos = self.radius * np.cos(i*alpha);
                 yPos = self.radius * np.sin(i*alpha);
                 vHolder = Vertex(self.numOfVertices,(xPos, yPos, 0),i+1);
-                self.verticesSet.append(vHolder)
+                self.verticesSet.append(vHolder);
+
 
 
     def initializeSelf(self):
@@ -130,7 +136,44 @@ class B_n:
         self.verticesSet.append(vertexNew);
         return vertexNew;
 
+    def generateProjBn(self,height,projVec,baseVec):
+        translateVec =[0,0,0];
+        newCentroid = [0,0,0];
+        print("Normal Vector: "+str(self.normalVector));
+        print("Base Vector: "+str(baseVec));
+        if self.checkIfVecEqual(baseVec,self.normalVector) ==  False:
+            for y in range(3):
+                print("y: "+str(y));
+                translateVec[y] = self.normalVector[y] - baseVec[y];
+        else:
+            translateVec = self.normalVector;
+        for z in range(3):
+            newCentroid[z] = self.centroid[z] +translateVec[z];
+        newCentroid = tuple(newCentroid);
+        BnNew = B_n(self.numOfVertices,False,self.radius,newCentroid,self.normalVector,False);
+        #This represent the top
+        self.scaleVector(translateVec,height);
+        iteratedTuple = [0,0,0];
+        for x in range(self.numOfVertices):
+            iteratedTuple[0] = self.verticesSet[x].vertexPosition[0]+ translateVec[0];
+            iteratedTuple[1] = self.verticesSet[x].vertexPosition[1]+ translateVec[1];
+            iteratedTuple[2] = self.verticesSet[x].vertexPosition[2]+ translateVec[2];
+            vertexNew = Vertex(self.numOfVertices,tuple(iteratedTuple),x+1);
+            BnNew.verticesSet.append(vertexNew);
+        return BnNew;
+
+    def getVertex(self, vertexID):
+        vertexTemp = None;
+        for x in range(self.numOfVertices):
+            vertexTemp = self.verticesSet[x];
+            if vertexTemp.vertexID == vertexID:
+                return vertexTemp;
+        print(" Get vertex function doesn't work")
+        return 0;
+
     def scaleVector(self, vectorScale, size):
+        print("Scale size: "+ str(size));
+        print("Vector to scale: "+str(vectorScale));
         alpha = size/LA.norm(vectorScale);
         vectorScale[0]=alpha*vectorScale[0];
         vectorScale[1]=alpha*vectorScale[1];
@@ -146,8 +189,15 @@ class B_n:
         compArray = np.array([xComp,0,zComp]);
         normArray = np.array(self.normalVector);
         result = np.absolute(np.dot(compArray,normArray));
+        #result = np.dot(compArray,normArray);
         #print( "Result of Dot Product: "+ str(result));
         return result;
+
+    def checkIfVecEqual(self, vec1, vec2):
+        for x in range(3):
+            if vec1[x] != vec2[x]:
+                return False;
+        return True;
 
 
 
@@ -209,6 +259,14 @@ class B_n:
         ax.scatter(xPos,yPos,zPos,c = 'r');
 
 
+    def drawLineToConnectBn(self,ax,Bn):
+        for x in range(self.numOfVertices):
+            vertex1 = np.array(self.verticesSet[x].vertexPosition);
+            vertex2 = np.array(Bn.verticesSet[x].vertexPosition);
+            v1Name = self.verticesSet[x].vertexID;
+            v2Name = self.verticesSet[x].vertexID;
+            print("Drawing line for "+ str(v1Name)+" , "+str(v2Name));
+            ax.plot([vertex1[0],vertex2[0]],[vertex1[1],vertex2[1]],[vertex1[2],vertex2[2]]);
 
     def drawLines(self,ax):
         for i in range(0,self.numOfVertices-1):
@@ -217,7 +275,18 @@ class B_n:
                 v1Name = self.verticesSet[i].vertexID;
                 v2Name = self.verticesSet[i+1].vertexID;
                 print("Drawing line for "+ str(v1Name)+" , "+str(v2Name));
-                ax.plot([vertex1[0],vertex2[0]],[vertex1[1],vertex2[1]],[0,0]);
+                ax.plot([vertex1[0],vertex2[0]],[vertex1[1],vertex2[1]],[vertex1[2],vertex2[2]]);
+        vertex1 = np.array(self.verticesSet[0].vertexPosition);
+        vertex2 = np.array(self.verticesSet[self.numOfVertices-1].vertexPosition);
+        v1Name = self.verticesSet[0].vertexID;
+        v2Name = self.verticesSet[self.numOfVertices-1].vertexID;
+        print("Drawing line for "+ str(v1Name)+" , "+str(v2Name));
+        print(" v1 position: "+str(self.verticesSet[0].vertexPosition));
+        print(" v12 position: :"+str(self.verticesSet[self.numOfVertices-1].vertexPosition));
+        print(" v1 shape: "+str(vertex1.shape));
+        print(" v2 shape: "+str(vertex2.shape));
+        ax.plot([vertex1[0],vertex2[0]],[vertex1[1],vertex2[1]],[vertex1[2],vertex2[2]]);
+
 
     def plotB_n(self, ax):
         xPos = 0;
