@@ -4,20 +4,24 @@ from GeoConstruct import *
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.lines as mlines
-
+from VertexState import *
 
 print("Hello");
 #x = GeoConstruct(10,20);
-numVertices = 12;
+numVertices = 5;
 height = 20;
 radius = 6;
 angle = 70;
 s_ij = 0.1
-beginHIndex = 784;
-endHIndex = 789
+beginHIndex = 785;
+endHIndex = 790;
 geoTempGraph = GeoConstruct(numVertices, height, radius, angle);
 print ("Num of Vertices"+ str(geoTempGraph.NumberOfVertices));
 rowCount = 0;
+#So the hidden node layer goes from 785,786,787,788,789
+#Everything is offset by 1.  788 is 789.  However, your
+#index starts at 1
+#index of 786 is node 785
 
 #Here we parse the files and load the matrices
 with open('Mot.csv') as csvFile:
@@ -52,7 +56,7 @@ geoTempGraph.initializeMatrices(motFinal,tstFinal,wgtFinal);
 
 #Here I'm truncating the matrix to only analyze the hidden nodes
 tempMat=np.array(motFinal);
-
+timeVec = motFinal[0,:];
 #This initializes the Mot File for hidden Nodes
 hiddenNodeMot=tempMat[beginHIndex:endHIndex,:];
 print(hiddenNodeMot[1,1000:2000]);
@@ -62,6 +66,9 @@ for i in range(0,hiddenNodeMot.shape[0]):
     for j in range(0,hiddenNodeMot.shape[1]):
         if hiddenNodeMot[i][j] >= 785 and hiddenNodeMot[i][j]<=789:
             hiddenNodeMot[i][j] = hiddenNodeMot[i][j] - 784;
+        #These are the input nodes
+        elif hiddenNodeMot[i][j] > 0 and hiddenNodeMot[i][j] <= 784:
+            hiddenNodeMot[i][j] = -1;
         else:
             hiddenNodeMot[i][j] = 0;
 
@@ -78,8 +85,8 @@ tempMat = np.array(dijFinal);
 dijHNode= tempMat[beginHIndex:endHIndex,beginHIndex:endHIndex];
 
 print(" Dij of Hidden Nodes");
-for i in range(0,dijHNode.shape[0]):
-    print(dijHNode[i,0:dijHNode.shape[1]]);
+#for i in range(0,dijHNode.shape[0]):
+#    print(dijHNode[i,0:dijHNode.shape[1]]);
 #Now, we need to initialize the Tij matrix
 
 
@@ -88,17 +95,36 @@ for i in range(0, TijHNode.shape[0]):
     for j in range(0, TijHNode.shape[1]):
         TijHNode[i][j]=TijHNode[i][j]/s_ij;
 
-print(" Time delay of Hidden Nodes");
+print("Time Vec");
+print("Shape : " +str(timeVec.shape));
+#for i in range(timeVec.shape[0]):
+#    print(timeVec[i]);
 
-for i in range(0, TijHNode.shape[0]):
-    print(TijHNode[i,0:TijHNode.shape[1]]);
+
+print("Time:")
+print(str(timeVec[1048:1058]));
+print("Hidden Node Mat Dimension: "+str(hiddenNodeMot.shape));
+print(hiddenNodeMot[0,1048:1500]);
+#print(" Time delay of Hidden Nodes");
+
+#for i in range(0, TijHNode.shape[0]):
+#    print(TijHNode[i,0:TijHNode.shape[1]]);
+
+beginTestIndex = 800;
+endTestIndex = 2000;
+#Here we iterate through all the vertices
+for i in range(hiddenNodeMot.shape[0]):
+    for j in range(beginTestIndex,endTestIndex):
+        if(hiddenNodeMot[i][j] == -1):
+            print(" There are still input nodes "+ str((i,j)));
+
 
 
 geoTempGraph.initializeHNodeMatrix(hiddenNodeMotFinal,hiddenNodeTstFinal,TijHNode);
 
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+#fig = plt.figure()
+#ax = fig.add_subplot(111, projection='3d')
 #geoTempGraph.initializeFirstBn(ax);
 
-geoTempGraph.initializePrism(ax,(0,0,1));
-plt.show();
+#geoTempGraph.initializePrism(ax,(0,0,1));
+#plt.show();

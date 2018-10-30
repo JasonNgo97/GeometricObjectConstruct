@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 import random
 import math
 from Vertex import *
@@ -58,6 +59,9 @@ class B_n:
         return   vecUnit;
 
     def initializeFirst(self):
+        """
+        THIS IS A GARBAGE FUNCTION. DONT USE AGAIN
+        """
         alpha = 2*np.pi/self.numOfVertices;
         if self.isFirst == False:
             return
@@ -89,10 +93,22 @@ class B_n:
         self.generateVertices(self.verticesSet[0]);
         self.printVertexCoordinate();
 
-    def plotVertices(self,ax):
-        for x in range(self.numOfVertices):
-            self.plotVertex(ax,self.verticesSet[x]);
-        return
+    def initializeSelfWithVert(self, vertBegin):
+        """
+        Given a vertex, construct the rest of the vertices
+        Note that centroid is already given, due to constructor.
+        """
+        vertStart = copy.deepcopy(vertBegin);
+        self.verticesSet.append(vertStart);
+        print(" Vertex Start: "+str(vertStart.vertexID));
+        for x in range(1,self.numOfVertices):
+            #Iterates and then updates the next vertex to startfrom
+            currentVertex = self.generateNextVertex(Beta,currentVertex);
+            print("Creating Vertex "+ str(x+1));
+        return;
+
+
+
 
     def generateVertices(self, vertexStart):
         Beta =  2*np.pi/self.numOfVertices;
@@ -103,22 +119,17 @@ class B_n:
             print("Creating Vertex "+ str(x+1));
         return;
 
-    def dotProductVecSet(self):
-        for x in range(self.numOfVertices):
-            vecX = self.verticesSet[x].vertexPosition[0] - self.centroid[0];
-            vecY = self.verticesSet[x].vertexPosition[1] - self.centroid[1];
-            vecZ = self.verticesSet[x].vertexPosition[2] - self.centroid[2];
-            vecArray = np.array([vecX,vecY,vecZ]);
-            normArray = np.array(self.normalVector);
-            result = np.absolute(np.dot(vecArray,normArray));
-            print("dot result  ("+str(x+1)+") :"+str(result));
-        return;
+
 
     def generateNextVertex(self,Beta, currentVertex):
         """
         Need to put the edge case for n=4
         where Beta >=90
+        We need to use the current vertex ID, add 1 and perform a mod
+
         """
+        vertID = currentVertex.getID + 1;
+        vertID = vertID % self.numOfVertices;
         vecX = currentVertex.vertexPosition[0] - self.centroid[0];
         vecY = currentVertex.vertexPosition[1] - self.centroid[1];
         vecZ = currentVertex.vertexPosition[2] - self.centroid[2];
@@ -131,8 +142,7 @@ class B_n:
         pointY = self.centroid[1] + newVec[1];
         pointZ = self.centroid[2] + newVec[2];
         pointVnew =(pointX, pointY, pointZ);
-        self.currentNumOfVertices+=1;
-        vertexNew = Vertex(self.numOfVertices,pointVnew,self.currentNumOfVertices);
+        vertexNew = Vertex(self.numOfVertices,pointVnew,vertID);
         self.verticesSet.append(vertexNew);
         return vertexNew;
 
@@ -179,6 +189,19 @@ class B_n:
         vectorScale[1]=alpha*vectorScale[1];
         vectorScale[2]=alpha*vectorScale[2];
         return;
+
+
+    def dotProductVecSet(self):
+        for x in range(self.numOfVertices):
+            vecX = self.verticesSet[x].vertexPosition[0] - self.centroid[0];
+            vecY = self.verticesSet[x].vertexPosition[1] - self.centroid[1];
+            vecZ = self.verticesSet[x].vertexPosition[2] - self.centroid[2];
+            vecArray = np.array([vecX,vecY,vecZ]);
+            normArray = np.array(self.normalVector);
+            result = np.absolute(np.dot(vecArray,normArray));
+            print("dot result  ("+str(x+1)+") :"+str(result));
+        return;
+
     def dotPwithNorm(self, t):
         """
         (x-c1)^2 + (z-c3)^2 = R is equation for circle
@@ -258,6 +281,10 @@ class B_n:
         zPos = vertex.vertexPosition[2];
         ax.scatter(xPos,yPos,zPos,c = 'r');
 
+    def plotVertices(self,ax):
+        for x in range(self.numOfVertices):
+            self.plotVertex(ax,self.verticesSet[x]);
+        return
 
     def drawLineToConnectBn(self,ax,Bn):
         for x in range(self.numOfVertices):

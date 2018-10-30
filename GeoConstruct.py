@@ -77,7 +77,10 @@ class GeoConstruct:
         sV = [4,5,7,9];
         PrismInit.activatedVertex(aV, sV);
         PrismInit.drawTopBottomBn(ax);
-        PrismInit.drawOLines(ax);
+        PrismInit.printLineInfo();
+        PrismInit.drawLines(ax);
+        #PrismInit.BnFitDist(aV);
+        #PrismInit.drawNewBn(ax);
 
     def initializeBn(self,ax,normVec):
         Bn = B_n(self.NumberOfVertices,False,self.radius,(0,0,0), normVec,True);
