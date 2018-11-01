@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 from GeoConstruct import *
+from NetworkState import *
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.lines as mlines
@@ -99,7 +100,10 @@ print("Time Vec");
 print("Shape : " +str(timeVec.shape));
 #for i in range(timeVec.shape[0]):
 #    print(timeVec[i]);
-
+WijHNode = wgtFinal[beginHIndex:endHIndex,beginHIndex:endHIndex];
+for i in range(0, WijHNode.shape[0]):
+    for j in range(0, WijHNode.shape[1]):
+        WijHNode[i][j]=1;
 
 print("Time:")
 print(str(timeVec[1048:1058]));
@@ -110,13 +114,18 @@ print(hiddenNodeMot[0,1048:1500]);
 #for i in range(0, TijHNode.shape[0]):
 #    print(TijHNode[i,0:TijHNode.shape[1]]);
 
-beginTestIndex = 800;
+beginTestIndex = 1100;
 endTestIndex = 2000;
+nS = NetworkState(numVertices,beginTestIndex,timeVec,endTestIndex,hiddenNodeMotFinal, TijHNode, WijHNode);
+print("Hello");
+#nS.initNetwork();
+nS.determineStateInterval(beginTestIndex,beginTestIndex+20);
+nS.printState();
 #Here we iterate through all the vertices
-for i in range(hiddenNodeMot.shape[0]):
-    for j in range(beginTestIndex,endTestIndex):
-        if(hiddenNodeMot[i][j] == -1):
-            print(" There are still input nodes "+ str((i,j)));
+#for i in range(hiddenNodeMot.shape[0]):
+#    for j in range(beginTestIndex,endTestIndex):
+#        if(hiddenNodeMot[i][j] == -1):
+#            print(" There are still input nodes "+ str((i,j)));
 
 
 
